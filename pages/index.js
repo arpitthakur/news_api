@@ -75,6 +75,11 @@ function index({ result }) {
                           return (
                             <>
                               <h3 className="item_author">
+                                <img
+                                  src="writer.png"
+                                  alt="writer_img"
+                                  className="writer_image"
+                                ></img>{" "}
                                 Author:&nbsp;{item1.name}
                               </h3>
                             </>
