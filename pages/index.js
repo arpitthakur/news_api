@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
+// import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Inter } from "next/font/google";
 import { Carousel } from "antd";
@@ -9,15 +9,31 @@ import styles from "@/styles/Home.module.css";
 import Pagination from "../Components/Pagination";
 import { paginate } from "@/Helper/paginate";
 import UsescrollTop from "@/Components/UsescrollTop";
+import Footer from "../Components/Footer";
+import dynamic from "next/dynamic";
+const Images = dynamic(() => import("../Components/Images"), { ssr: false });
 
 import News from "../Components/News";
 function index({ result }) {
   const [currentPage, setCurrentPage] = useState(1);
+
   const pageSize = 10;
 
   const onPageChange = (page) => {
     console.log(page);
     setCurrentPage(page);
+  };
+  const replaceImgWithError = (e) => {
+    e.target.onerror = null;
+    e.target.src = "http://placekitten.com/g/200/300";
+  };
+
+  const hideImgWhenError = (e) => {
+    e.target.onerror = null;
+    e.target.style.display = "none";
+  };
+  const handleImageError = () => {
+    console.log("Failed to load image");
   };
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0 });
@@ -28,6 +44,11 @@ function index({ result }) {
   console.log(paginatedPosts, "test");
   return (
     <>
+      <Head>
+        <title>News_api</title>
+        <meta name="description" content="News_updates" key="desc" />
+      </Head>
+
       <div className="heading_section">
         <div className="header_section">
           <div className="row">
@@ -63,14 +84,20 @@ function index({ result }) {
                   <>
                     <div className="row">
                       <div className="col-md-6 mb-4">
-                        <img src={item.image} className="card-image"></img>
+                        {/* <Images /> */}
+
+                        <Images
+                          src={item.image}
+                          className="card-image"
+                          // onError={replaceImgWithError}
+                        />
                       </div>
 
-                      <div class="col-md-6 mb-4">
+                      <div className="col-md-6 mb-4">
                         <h4>
                           <strong>{item.title}</strong>
                         </h4>
-                        <p class="text-muted">{item.body}</p>
+                        <p className="text-muted">{item.body}</p>
                         {item?.authors?.map((item1, index1) => {
                           return (
                             <>
@@ -85,14 +112,20 @@ function index({ result }) {
                             </>
                           );
                         })}
-                        <h5 className="item_time">
-                          Dated at:&nbsp;{item.date}
-                        </h5>
-                        <button type="button" class="btn btn-primary">
-                          <a href={item.url} className="item_url">
-                            Read more
-                          </a>
-                        </button>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <h5 className="item_time">
+                              Dated at:&nbsp;{item.date}
+                            </h5>
+                          </div>
+                          <div className="col-md-6">
+                            <button type="button" className="btn btn-primary">
+                              <a href={item.url} className="item_url">
+                                Read more
+                              </a>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -104,17 +137,26 @@ function index({ result }) {
       </div>
       <News />
       <div className="footer_section">
-        <p>
-          Page: <span style={{ color: "red" }}>{currentPage}</span>
-        </p>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-6">
+              <p className="page_style">
+                Page: <span style={{ color: "red" }}>{currentPage}</span>
+              </p>
 
-        <Pagination
-          items={result?.articles?.results?.length} // 100
-          currentPage={currentPage} // 1
-          pageSize={pageSize} // 10
-          onPageChange={onPageChange}
-        />
+              <Pagination
+                items={result?.articles?.results?.length} // 100
+                currentPage={currentPage} // 1
+                pageSize={pageSize} // 10
+                onPageChange={onPageChange}
+              />
+            </div>
+          </div>
+        </div>
         <UsescrollTop />
+      </div>
+      <div className="footer_section_1">
+        <Footer />
       </div>
     </>
   );
